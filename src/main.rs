@@ -19,6 +19,21 @@ The code autodetects whether it is a BOM or a PickAndPlace coordinate file.
 
 */
 
+fn rot_adjust(rot: &str, delta: i32) -> String {
+    let rot = rot.parse::<i32>().unwrap();
+    let rot_adj = (rot + delta) % 360;
+    eprintln!("Adjust rotation {} => {}", &rot, &rot_adj);
+    return rot_adj.to_string();
+}
+
+fn fixup_rotation(footprint: &str, comment: &str, rot: &str) -> String {
+    match (footprint, comment) {
+        ("SENSOR-SMD_SPL06-007", "SPL06-007") => rot_adjust(rot, 180),
+        ("LED-ARRAY-SMD_4P-L1.6-W1.5-BL-FD", "TJ-S1615SW6TGLCCSRGB-A5") => rot_adjust(rot, 90),
+        _ => rot.to_string(),
+    }
+}
+
 fn main() {
     let fname = std::env::args().skip(1).nth(0).unwrap();
     let mut file = File::open(fname).unwrap();
@@ -69,9 +84,10 @@ fn main() {
             } else {
                 "Top"
             };
+            let rotation = fixup_rotation(&line_parts[1], &line_parts[10], &line_parts[9]);
             output.push_str(&format!(
                 "\"{}\",\"{}\",\"{}\",\"{}\",\"{}\"\n",
-                line_parts[0], line_parts[2], line_parts[3], layer, line_parts[9]
+                line_parts[0], line_parts[2], line_parts[3], layer, &rotation
             ));
         }
         if is_bom {
