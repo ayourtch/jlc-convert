@@ -30,6 +30,11 @@ fn fixup_rotation(footprint: &str, comment: &str, rot: &str) -> String {
     match (footprint, comment) {
         ("SENSOR-SMD_SPL06-007", "SPL06-007") => rot_adjust(rot, 180),
         ("LED-ARRAY-SMD_4P-L1.6-W1.5-BL-FD", "TJ-S1615SW6TGLCCSRGB-A5") => rot_adjust(rot, 90),
+        // Unsure if this needs to be fixed up - the user representation and the DFM look different
+        // ("QFN-16_L3.0-W3.0-P0.50-TL_FXOS8700CQR1", "FXOS8700CQR1") => rot_adjust(rot, 270),
+        ("LGA-20_L4.5-W3.0-P0.50-BL", "BMX055") => rot_adjust(rot, 90),
+
+
         _ => rot.to_string(),
     }
 }
